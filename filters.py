@@ -12,6 +12,8 @@ KATAKANA_FILTER_OPT_INCLUDES = "_KATAKANA_INCLUDES_"
 KATAKANA_FILTER_OPT_EXCLUDES = "_KATAKANA_EXCLUDES_"
 KATAKANA_FILTER_OPT_ONLY = "_KATAKANA_ONLY_"
 
+WORD_TYPES = ['名', '動', '他動', '自動', '自他動', '形', 'イ形', 'ナ形', '副', '接', '接尾', '接頭', '連', '連語', '連体', '代', '助', '嘆']
+
 # データのレベルフィルター
 def filter_words_lv(data, level = ''):
     if level == '':
@@ -40,7 +42,7 @@ def filter_words_type(data, type_s = ''):
         if not data or len(data) == 0:
             print("データの種類フィルター data is null")
             return data, None
-        types = ['名', '動', '他動', '自動', '自他動', '形', 'イ形', 'ナ形', '副', '接', '接尾', '接頭', '連', '連語', '連体']
+        types = WORD_TYPES
         print("種類学習する単語のレベル一覧：")
         for index, t in enumerate(types):
             print(f"{index}: {t}\t")
@@ -58,10 +60,15 @@ def filter_words_type(data, type_s = ''):
                     break
             except ValueError:
                 print("数字を入力してください。")
-    data = [word for word in data if type_s in word['TYPE1']]
+    res = []
+    for word in data:
+        if type_s in word['TYPE1']:
+            res.append(word)
+        elif type_s in word['TYPE']:
+            res.append(word)
     if DEBUG_M:
         print(f"\n種類{type_s}に当てる単語数 -> {len(data)}")
-    return data, type_s
+    return res, type_s
 
 # データの漢語フィルター
 def filter_words_kango(data, res = ''):
@@ -99,3 +106,13 @@ def filter_words_katakana(data, res = ''):
     if DEBUG_M:
         print(f"\nカタカナ{res}の選択に関して、当てる単語数 -> {len(data)}")
     return data, isKatakana
+
+# データの重複除くフィルター
+def filter_word_duplicate(data, duplicate_array):
+    res = []
+    for item in data:
+        item_id = item["ID"]
+        if item_id not in duplicate_array:
+            duplicate_array.append(item_id)
+            res.append(item_id)
+    return res
