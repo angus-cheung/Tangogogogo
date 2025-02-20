@@ -1,0 +1,5 @@
+pydub
+ffmpeg
+dropbox
+requests
+pydub
